@@ -38,8 +38,7 @@ be using JMdict instead.
 """
   
 import sys, os, re, gzip, gettext
-from functools import reduce
-gettext.install('pyjben', str=True)
+gettext.install('pyjben', unicode=True)
   
   
 # Below follows the information codes sorted more-or-less as they are
@@ -80,7 +79,7 @@ valid_dialect_codes = set((
 # Grab all ()'s before a gloss
 all_paren_match = re.compile("^(\([^)]*\)[ ]*)+")
 # Grab the first () data entry, with group(1) set to the contents
-paren_match = re.compile("^[ ]*\(([^)]+)\)[ ]*")
+paren_match = re.compile(u"^[ ]*\(([^)]+)\)[ ]*")
   
 def info_field_valid(i_field):
     """Returns whether a given info code is valid."""
@@ -146,10 +145,10 @@ class EdictEntry(object):
         if not raw_entry:
             return None
   
-        jdata, ndata = raw_entry.split('/', 1)
+        jdata, ndata = raw_entry.split(u'/', 1)
   
         # Get Japanese
-        pieces = jdata.split('[', 1)
+        pieces = jdata.split(u'[', 1)
         self.japanese = pieces[0].strip()
         if len(pieces) > 1:
             # Store furigana without '[]'
@@ -161,7 +160,7 @@ class EdictEntry(object):
         #    print "JAPANESE: %s" % self.japanese
   
         # Get native language data
-        glosses = ndata.split('/')
+        glosses = ndata.split(u'/')
         for gloss in glosses:
             # For each gloss, we need to check for ()'s at the beginning.
             # Multiple such ()'s may be present.
@@ -185,16 +184,16 @@ class EdictEntry(object):
                 #if not m: break  # Shouldn't ever happen...
                 i_field = m.group(1)
                 #print "INFO FIELD FOUND:", i_field
-                i_fields = i_field.split(',')
+                i_fields = i_field.split(u',')
   
                 # Check that all i_fields are valid
-                bools = list(map(info_field_valid, i_fields))
+                bools = map(info_field_valid, i_fields)
                 ok = reduce(lambda x, y: x and y, bools)
   
                 if not ok:
                     #print "INVALID INFO FIELD FOUND, REVERTING"
                     #print "INFO WAS %s, GLOSS WAS %s" % (info, gloss)
-                    print(info)
+                    print info
                     gloss = info + gloss
                     #print "RESTORED GLOSS:", gloss
                     break
@@ -214,29 +213,29 @@ class EdictEntry(object):
         if not raw_entry:
             return None
   
-        jdata, ndata = raw_entry.split('/', 1)
+        jdata, ndata = raw_entry.split(u'/', 1)
   
         # Get Japanese
-        pieces = jdata.split('[', 1)
+        pieces = jdata.split(u'[', 1)
         self.japanese = pieces[0].strip()
         if len(pieces) > 1:
             # Store furigana without '[]'
             self.furigana = pieces[1].strip()[:-1]
   
         # Get native language data
-        self.glosses = [g for g in ndata.split('/') if g]
+        self.glosses = [g for g in ndata.split(u'/') if g]
   
     def to_string(self, **kwargs):
         if self.furigana:
-            ja = _("%s [%s]") % (self.japanese, self.furigana)
+            ja = _(u"%s [%s]") % (self.japanese, self.furigana)
         else:
             ja = self.japanese
-        native = _("; ").join(self.glosses)
-        return _("%s: %s") % (ja, native)
+        native = _(u"; ").join(self.glosses)
+        return _(u"%s: %s") % (ja, native)
   
     def __unicode__(self):
         """Dummy string dumper"""
-        return str(self.__repr__())
+        return unicode(self.__repr__())
   
 class Parser(object):
     def __init__(self, filename, use_cache=True, encoding="EUC-JP"):
@@ -262,7 +261,7 @@ class Parser(object):
   
         if self.use_cache and self.cache:
             # Read from cache
-            for k, entry in self.cache.items():
+            for k, entry in self.cache.iteritems():
                 proc_entry(entry)
         else:
             # Read from file
@@ -274,7 +273,7 @@ class Parser(object):
             f.close()
             fdata = fdata.decode(self.encoding)
             lines = fdata.splitlines()
-            lines = [line for line in lines if line and (line[0] != "#")]
+            lines = [line for line in lines if line and (line[0] != u"#")]
   
             data = {}
             for line in lines:
@@ -291,7 +290,7 @@ class Parser(object):
         for item in results:
             is_common = False
             for gloss in item.glosses:
-                if '(P)' in gloss:
+                if u'(P)' in gloss:
                     is_common = True
                     break
             if is_common:
@@ -307,7 +306,7 @@ class Parser(object):
   
 if __name__ == "__main__":
     kp = Parser('../_dicts/edict-2011-08-30')
-    query = '私'
+    query = u'私'
     for i, entry in enumerate(kp.search(query)):
-        print(entry.to_string().encode('utf-8'))
+        print entry.to_string().encode('utf-8')
 

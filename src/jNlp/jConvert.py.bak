@@ -30,7 +30,7 @@ class ChartParser(object):
             #@r = first romaji in row
             #@c = concatinating romaji in column
             r, c = output[k]
-            k, r, c = [str(item,'utf-8') for item in [k,r,c]]
+            k, r, c = [unicode(item,'utf-8') for item in [k,r,c]]
             if k == 'X':continue
             romaji = ''.join([item.replace('X', '') for item in [r,c]])
             chartDict[k] = romaji
@@ -44,10 +44,10 @@ def tokenizedRomaji(jSent):
         for idx, kata in enumerate(kataChunk,1):
             if idx != len(kataChunk):
                 doubles = kata+kataChunk[idx]
-                if doubles in kataDict:
+                if kataDict.has_key(doubles):
                     romaji += kataDict[doubles]
                     continue
-            if kata in kataDict:
+            if kataDict.has_key(kata):
                 romaji += kataDict[kata]
             else:
                 pass
@@ -57,8 +57,8 @@ def tokenizedRomaji(jSent):
 
 if __name__ == '__main__':
     #kataDict = ChartParser('data/katakanaChart.txt').chartParse()
-    sent = '気象庁が２１日午前４時４８分、発表した天気概況によると、'
-    print(' '.join(tokenizedRomaji(sent)).encode('utf-8'))
+    sent = u'気象庁が２１日午前４時４８分、発表した天気概況によると、'
+    print ' '.join(tokenizedRomaji(sent)).encode('utf-8')
     #print tokenizedRomaji(sent)
 
     

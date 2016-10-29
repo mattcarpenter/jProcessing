@@ -11,11 +11,11 @@ def add_target(jCabocha_tree,target_sent,**kwargs):
     Not called
     See jCabocha_with_target()
     """
-    if 'id' in kwargs: attach_id = kwargs['id']
+    if kwargs.has_key('id'): attach_id = kwargs['id']
     else: attach_id = 'unknown'
     start_pos = len(target_sent.split('*')[0])
     tw = target_sent.split('*')[1]
-    sent = ''
+    sent = u''
     for chunk in jCabocha_tree.getchildren():
         for tok in chunk:
             if tw in tok.text and len(sent) >= start_pos -3:
@@ -77,11 +77,11 @@ def jInfo(target_sent, infotype='base'):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(add_help = True)
     parser = argparse.ArgumentParser(description= 'No description sepecified')
-    parser.add_argument('-a', action="store", dest="action", type=str, help='-a base')
+    parser.add_argument('-a', action="store", dest="action", type=unicode, help='-a base')
     parser.add_argument('-s', action="store", dest="sentence", type=str, help='-s Sentence')
     myarguments = parser.parse_args()
-    print(cabocha(str(myarguments.sentence,'utf-8')).encode('utf-8'))
-    print(jReads(str(myarguments.sentence,'utf-8')))
+    print cabocha(unicode(myarguments.sentence,'utf-8')).encode('utf-8')
+    print jReads(unicode(myarguments.sentence,'utf-8'))
 
     """
     TO Mark the target word use * 1byte

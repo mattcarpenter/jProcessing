@@ -43,7 +43,7 @@ class Property(object):
         for table in tables:
             buff = resource_stream('jNlp', 'data/%s'%table).readlines()
             for line in buff:
-                line = str(line, 'utf-8')
+                line = unicode(line, 'utf-8')
                 Chars += line.split()
         return Chars
             
@@ -53,10 +53,10 @@ class Property(object):
         self.content = {}
         for line in self.file:
             if not line.strip(): continue
-            line = str(line,'utf-8')
+            line = unicode(line,'utf-8')
             pos = line.split()[2].strip()
             self.content[pos] = int(line.split()[0].strip())
-        if self.pos in self.content and self.content[self.pos]: return True
+        if self.content.has_key(self.pos) and self.content[self.pos]: return True
         return False
     def tok_xml(self, sent, word):
         #Usage
@@ -66,7 +66,7 @@ class Property(object):
         for chunk in cTree.getchildren():#chunks
             for tok in chunk.getchildren():
                 if tok.get('target'):return tok
-        return etree.fromstring('<tok></tok>')
+        return etree.fromstring(u'<tok></tok>')
     def iskana(self, word):
         romaji = ['a', 'b', 'c', 'd', 'e', 'f', 'g', \
                   'h', 'i', 'j', 'k', 'l', 'm', 'n', \
@@ -82,15 +82,15 @@ if __name__ == '__main__':
     a = 'Once upon a time in Italy'
     b = 'Thre was a time in America'
     #print long_substr(a, b)
-    a = 'これでアナタも冷え知らず'
-    b = 'これでア冷え知らずナタも'
+    a = u'これでアナタも冷え知らず'
+    b = u'これでア冷え知らずナタも'
     #print long_substr(a, b).encode('utf-8')
     #similarity = Similarities()
     #print similarity.minhash(' '.join(jTokenize(a)), ' '.join(jTokenize(b)))
     pos = Property()
     #print pos.iscontent(u'地域')
     #print pos.tok_xml(u'これでアナタも冷え知らず', u'冷').get('pos')
-    print(pos.iskana('冷'))
+    print pos.iskana(u'冷')
 
 
 
